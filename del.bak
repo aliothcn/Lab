@@ -1,0 +1,50 @@
+<%@ language="vbscript"%>
+<%response.Expires = 0%>
+<%
+if session("admin")="" or session("adminid")=""  then
+  response.redirect "login.asp"
+  response.end
+else
+  adminname=session("admin")
+end if%>
+
+<!--#include file="inc/conn.inc"-->
+<%
+
+id=trim(Request("course"))
+if id="" then
+ response.write "<script language=JavaScript>" & chr(13) & "alert('未选择');" & "history.back()" & "</script>"
+  response.End
+end if
+
+set rs=server.createobject("adodb.recordset")
+set rs1=server.createobject("adodb.recordset")
+sqltext="select * from kc where id="&id
+rs.open sqltext,conn,3,3
+if rs("教师名")<>adminname and adminname<>"admin" then
+ response.write "<script language=JavaScript>" & chr(13) & "alert('删除失败。');" & "history.back()" & "</script>"
+elseif rs.recordcount <> 1 then
+  response.write "<script language=JavaScript>" & chr(13) & "alert('删除失败。');" & "history.back()" & "</script>"
+  response.End
+else
+
+rs("星期一")=""
+rs("星期二")=""
+rs("星期三")=""
+rs("星期四")=""
+rs("星期五")=""
+rs("星期六")=""
+rs("星期日")=""
+rs("person")=adminname
+rs("ttt")=now()
+rs.update
+
+
+
+Response.Write"<script language=javascript>location.replace('main.asp?labid="&request("labid")&"&course=" & request("course") & "&show="& request("show") & "')</script>"
+
+end if
+
+rs.close
+conn.close
+%>
